@@ -1,0 +1,9 @@
+.idea
+.terraform
+sessionmanager-bundle
+vmagent-remotewrite-data
+.terraform.lock.hcl
+sessionmanager-bundle.zip
+terraform.tfstate
+terraform.tfstate.backup
+*.bkp.*
