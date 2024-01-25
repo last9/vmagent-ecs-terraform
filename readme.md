@@ -2,7 +2,7 @@
 
 ## Overview
 
-This Terraform module is designed to deploy a Docker container as an AWS ECS Fargate task with an attached Amazon EFS filesystem. It allows for customized configurations, including setting up environment variables and remote write credentials for VictoriaMetrics (or similar tools).
+This Terraform module is designed to deploy a Docker container as an AWS ECS Fargate task with an attached Amazon EFS filesystem. It allows for customized configurations, including setting up environment variables and remote write credentials for Levitate.
 
 ## Prerequisites
 
