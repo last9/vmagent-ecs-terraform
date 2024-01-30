@@ -2,7 +2,9 @@
 
 ## Overview
 
-This Terraform module is designed to deploy a Docker container as an AWS ECS Fargate task with an attached Amazon EFS filesystem. It allows for customized configurations, including setting up environment variables and remote write credentials for Levitate.
+This Terraform module is designed to deploy a Docker container as an AWS ECS Fargate task with an attached Amazon EFS
+filesystem. It allows for customized configurations, including setting up environment variables and remote write
+credentials for VictoriaMetrics (or similar tools).
 
 ## Prerequisites
 
@@ -57,10 +59,30 @@ Replace the values with your specific configuration details.
 
 ## Notes
 
-- Ensure that the provided AWS credentials have the necessary permissions for creating and managing ECS and EFS resources.
+- Ensure that the provided AWS credentials have the necessary permissions for creating and managing ECS and EFS
+  resources.
 - Review and adjust security group rules as per your organization's security policies.
 - Validate your Terraform configurations with `terraform plan` before applying changes with `terraform apply`.
 
 ### How to mount/unmount configuration files to the created EFS
+
 - Refer [efs_mount.md](efs_mount.md)
 - Refer [efs_unmount.md](efs_unmount.md)
+
+## Disclaimer
+
+Before proceeding with state management in Terraform, it is essential to adhere to your organization's established best
+practices and guidelines for managing Terraform state. If your organization has specific state management practices in
+place, please follow them diligently.
+
+However, in cases where your organization does not have established Terraform state management practices, or if you are
+working on a one-time operation, you may consider checking in the state files directly into your Git repository, rather
+than implementing a dedicated remote state backend like Amazon S3 or other storage solutions.
+
+Please exercise caution and consider the security and access control implications of storing state files in Git. This
+approach may not be suitable for all scenarios, and it is crucial to assess the potential risks and benefits before
+making a decision.
+
+Ultimately, the choice of state management strategy should align with your project's specific requirements and your
+organization's policies. If in doubt or if security and compliance concerns arise, it is advisable to consult with your
+organization's infrastructure or security team for guidance on the best approach to Terraform state management.

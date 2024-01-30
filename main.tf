@@ -6,7 +6,7 @@ data "aws_vpc" "aws_vpc" {
   id = var.vpc_id
 }
 
-resource "aws_security_group" "vmagent_sg" {
+resource "aws_security_group" "last9_vmagent_sg" {
   vpc_id = data.aws_vpc.aws_vpc.id
 
   egress {
@@ -17,20 +17,22 @@ resource "aws_security_group" "vmagent_sg" {
   }
 
   tags = {
-    Name = "vmagent-security-group"
+    Name          = "last9-vmagent-security-group"
+    last9_enabled = true
   }
 }
 
-resource "aws_efs_file_system" "vmagent_efs" {
+resource "aws_efs_file_system" "last9_vmagent_efs" {
   creation_token = "vmagent-efs"
 
   tags = {
-    Name = "VMagent EFS"
+    Name          = "VMagent EFS"
+    last9_enabled = true
   }
 
 }
 
-resource "aws_security_group" "vmagent_efs_sg" {
+resource "aws_security_group" "last9_vmagent_efs_sg" {
   name        = "vmagent-efs-security-group"
   description = "Security group for EFS"
   vpc_id      = data.aws_vpc.aws_vpc.id
@@ -50,15 +52,16 @@ resource "aws_security_group" "vmagent_efs_sg" {
   }
 
   tags = {
-    Name = "EFS Security Group"
+    Name          = "EFS Security Group"
+    last9_enabled = true
   }
 }
 
-resource "aws_efs_mount_target" "vmagent_efs_mt" {
+resource "aws_efs_mount_target" "last9_vmagent_efs_mt" {
   for_each        = toset(var.subnet_ids)
-  file_system_id  = aws_efs_file_system.vmagent_efs.id
+  file_system_id  = aws_efs_file_system.last9_vmagent_efs.id
   subnet_id       = each.value
-  security_groups = [aws_security_group.vmagent_efs_sg.id]
+  security_groups = [aws_security_group.last9_vmagent_efs_sg.id]
 }
 
 resource "aws_security_group_rule" "ecs_to_efs" {
@@ -66,12 +69,13 @@ resource "aws_security_group_rule" "ecs_to_efs" {
   from_port                = 2049
   to_port                  = 2049
   protocol                 = "tcp"
-  security_group_id        = aws_security_group.vmagent_sg.id
-  source_security_group_id = aws_security_group.vmagent_efs_sg.id
+  security_group_id        = aws_security_group.last9_vmagent_sg.id
+  source_security_group_id = aws_security_group.last9_vmagent_efs_sg.id
 }
 
-resource "aws_cloudwatch_log_group" "vmagent_ecs_log_group" {
-  name = "/ecs/${var.environment}/vmagent"
+resource "aws_cloudwatch_log_group" "last9_vmagent_ecs_log_group" {
+  name              = "/ecs/${var.environment}/vmagent"
+  retention_in_days = 5
 }
 
 resource "aws_iam_role" "ecs_execution_role" {
@@ -133,7 +137,7 @@ resource "aws_iam_policy" "efs_access_policy" {
           "elasticfilesystem:DescribeAccessPoints",
           "elasticfilesystem:DescribeMountTargets"
         ],
-        Resource = aws_efs_file_system.vmagent_efs.arn
+        Resource = aws_efs_file_system.last9_vmagent_efs.arn
       }
     ]
   })
@@ -144,27 +148,28 @@ resource "aws_iam_role_policy_attachment" "ecs_execution_role_efs_attachment" {
   policy_arn = aws_iam_policy.efs_access_policy.arn
 }
 
-resource "aws_ecs_service" "vmagent-service" {
-  name            = "vmagent-ecs-service"
+resource "aws_ecs_service" "last9-vmagent-service" {
+  name            = "last9-vmagent-ecs-service"
   cluster         = var.ecs_cluster_id
-  task_definition = aws_ecs_task_definition.vmagent_task_definition.arn
+  task_definition = aws_ecs_task_definition.last9_vmagent_task_definition.arn
   launch_type     = "FARGATE"
   desired_count   = 1
 
   network_configuration {
     subnets          = var.subnet_ids
-    security_groups  = [aws_security_group.vmagent_sg.id]
+    security_groups  = [aws_security_group.last9_vmagent_sg.id]
     assign_public_ip = true # Check this and configure as required
   }
 
   tags = {
-    Name        = "VMAgent"
-    Environment = var.environment
+    Name          = "last9-vmagent"
+    Environment   = var.environment
+    last9_enabled = true
   }
 }
 
-resource "aws_ecs_task_definition" "vmagent_task_definition" {
-  family                   = "vmagent"
+resource "aws_ecs_task_definition" "last9_vmagent_task_definition" {
+  family                   = "last9-vmagent"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
   cpu                      = "2048"  # adjust based on your application requirements
@@ -173,9 +178,9 @@ resource "aws_ecs_task_definition" "vmagent_task_definition" {
   execution_role_arn = aws_iam_role.ecs_execution_role.arn
 
   volume {
-    name = "vmagent-volume"
+    name = "last9-vmagent-volume"
     efs_volume_configuration {
-      file_system_id          = aws_efs_file_system.vmagent_efs.id
+      file_system_id          = aws_efs_file_system.last9_vmagent_efs.id
       root_directory          = "/"
       transit_encryption      = "ENABLED"
       transit_encryption_port = 2049
@@ -184,7 +189,7 @@ resource "aws_ecs_task_definition" "vmagent_task_definition" {
 
   container_definitions = jsonencode([
     {
-      name      = "vmagent-scraper"
+      name      = "last9-vmagent-scraper"
       image     = "victoriametrics/vmagent:latest"
       essential = true
 
@@ -206,7 +211,7 @@ resource "aws_ecs_task_definition" "vmagent_task_definition" {
       logConfiguration = {
         logDriver = "awslogs",
         options   = {
-          "awslogs-group"         = aws_cloudwatch_log_group.vmagent_ecs_log_group.name
+          "awslogs-group"         = aws_cloudwatch_log_group.last9_vmagent_ecs_log_group.name
           "awslogs-region"        = var.aws_region,
           "awslogs-stream-prefix" = "-vmagent",
         }
@@ -221,12 +226,11 @@ resource "aws_ecs_task_definition" "vmagent_task_definition" {
 
       mountPoints = [
         {
-          sourceVolume  = "vmagent-volume",
+          sourceVolume  = "last9-vmagent-volume",
           containerPath = var.container_mount_path,
           readOnly      = false,
         }
       ]
-
 
       environment = [
         {
@@ -236,4 +240,9 @@ resource "aws_ecs_task_definition" "vmagent_task_definition" {
       ]
     }
   ])
+
+  tags = {
+    last9_enabled = true
+    Environment   = var.environment
+  }
 }

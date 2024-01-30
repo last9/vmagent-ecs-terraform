@@ -45,21 +45,21 @@ To mount an EFS file system on an EC2 instance, the instance must have an NFS cl
 
 1. **Create a Mount Point**:
    ```bash
-   sudo mkdir -p $HOME/efs/mnt
+   sudo mkdir -p /efs/mnt
    ```
 
 2. **Mount the EFS File System**:
     - You can find the DNS name of your EFS file system in the AWS Management Console (under the EFS section).
     - Mount the EFS using:
       ```bash
-      sudo mount -t nfs4 -o nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2 {EFS-DNS-Name}:/ $HOME/efs/mnt
+      sudo mount -t nfs4 -o nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2 {EFS-DNS-Name}:/ /efs/mnt
       ```
 
 3. **Automatic Mount on Reboot** (Optional):
     - Edit `/etc/fstab` to add an entry for the EFS to automatically mount it on system reboots.
     - Add the following line:
       ```
-      {EFS-DNS-Name}:/ $HOME/efs/mnt nfs4 nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2 0 0
+      {EFS-DNS-Name}:/ /efs/mnt nfs4 nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2 0 0
       ```
 
 ### Step 5: Verify the Mount
@@ -72,13 +72,13 @@ To mount an EFS file system on an EC2 instance, the instance must have an NFS cl
 ### Step 6: Create a directory for vmagent configs
 
   ```bash
-  mkdir -p $HOME/efs/mnt/vmagent-cfgs
+  mkdir -p /efs/mnt/vmagent-cfgs
   ```
 
 ### Step 7: Mount the [vmagent](vmagent.yaml) config
 
   ```bash
-  scp ./vmagent.yaml username@ec2_host_ip:~/efs/mnt/vmagent-cfgs
+  scp ./vmagent.yaml username@ec2_host_ip:/efs/mnt/vmagent-cfgs
   ```
 
 ### Additional Considerations

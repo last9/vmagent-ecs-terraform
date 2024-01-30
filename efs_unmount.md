@@ -6,18 +6,18 @@ Unmounting an Amazon Elastic File System (EFS) from a host, such as an EC2 insta
    ```
 
    ```bash
-   sudo lsof $HOME/efs/mnt
+   sudo lsof /efs/mnt
    ```
 
-   Replace `$HOME/efs/mnt` with the actual mount point of your EFS file system. If this command outputs any processes, you should stop them before proceeding.
+   Replace `/efs/mnt` with the actual mount point of your EFS file system. If this command outputs any processes, you should stop them before proceeding.
 
 2. **Unmount the File System**: Use the `umount` command to unmount the EFS file system.
 
    ```bash
-   sudo umount $HOME/efs/mnt
+   sudo umount /efs/mnt
    ```
 
-   Again, replace `$HOME/efs/mnt` with your EFS mount point. If the file system is busy (perhaps due to some processes still using it), you might see an error. In that case, ensure all processes using the file system are stopped.
+   Again, replace `/efs/mnt` with your EFS mount point. If the file system is busy (perhaps due to some processes still using it), you might see an error. In that case, ensure all processes using the file system are stopped.
 
 3. **Verify the File System is Unmounted**: You can verify that the file system has been unmounted successfully by using the `df` command.
 
