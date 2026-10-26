@@ -1,4 +1,4 @@
-# Terraform Module for Levitate Installation using AWS ECS with EFS and Environment Configurations
+# Terraform Module for Last9 Installation using AWS ECS with EFS and Environment Configurations
 
 ## Overview
 
@@ -25,9 +25,9 @@ credentials for VictoriaMetrics (or similar tools).
 - `vpc_id`: The ID of the VPC where resources will be created.
 - `subnet_ids`: List of subnet IDs for the ECS service and EFS mount targets.
 - `ecs_cluster_id`: The ID of the ECS cluster for deploying services.
-- `levitate_remote_write_url`: The URL for Levitate remote write.
-- `levitate_remote_write_username`: The username for Levitate remote write authentication.
-- `levitate_remote_write_password`: The password for Levitate remote write authentication.
+- `levitate_remote_write_url`: The URL for Last9 remote write.
+- `levitate_remote_write_username`: The username for Last9 remote write authentication.
+- `levitate_remote_write_password`: The password for Last9 remote write authentication.
 - `environment`: The environment name where all these resources will reside.
 - `container_mount_path`: The path where the container will mount the volume.
 
