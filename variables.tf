@@ -24,17 +24,17 @@ variable "environment" {
 }
 
 variable "levitate_remote_write_url" {
-  description = "URL for Levitate remote write"
+  description = "URL for Last9 remote write"
   type        = string
 }
 
 variable "levitate_remote_write_username" {
-  description = "Username for Levitate remote write"
+  description = "Username for Last9 remote write"
   type        = string
 }
 
 variable "levitate_remote_write_password" {
-  description = "Password for Levitate remote write"
+  description = "Password for Last9 remote write"
   type        = string
 }
 
